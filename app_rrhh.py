@@ -43,7 +43,7 @@ st.markdown('<div class="subtitulo">CONSTRUYENDO FUTURO</div>', unsafe_allow_htm
 
 st.write("Sube los archivos Excel (.xlsx) de liquidaciones descargados de Talana para detectar variaciones mayores al 5%, ítems nuevos o faltantes.")
 
-# 2. Carga de Archivos (Actualizado a .xlsx)
+# 2. Carga de Archivos
 col1, col2 = st.columns(2)
 with col1:
     archivo_mes_anterior = st.file_uploader("Sube el archivo del Mes Anterior (Excel)", type=['xlsx'])
@@ -53,7 +53,7 @@ with col2:
 # 3. Lógica de Procesamiento
 if archivo_mes_anterior is not None and archivo_mes_actual is not None:
     try:
-        # Actualizado a read_excel
+        # Lectura directa de archivos Excel
         df_anterior = pd.read_excel(archivo_mes_anterior)
         df_actual = pd.read_excel(archivo_mes_actual)
 
@@ -61,8 +61,8 @@ if archivo_mes_anterior is not None and archivo_mes_actual is not None:
         common_cols = set(df_anterior.columns).intersection(set(df_actual.columns))
         id_cols = ['Rut', 'Trabajador', 'Código de Contrato']
         
-        # Validar que existan las columnas clave antes de continuar
-        if no set(id_cols).issubset(df_anterior.columns) or not set(id_cols).issubset(df_actual.columns):
+        # Validación de columnas corregida (con 'not')
+        if not set(id_cols).issubset(df_anterior.columns) or not set(id_cols).issubset(df_actual.columns):
             st.error("Error: Los archivos no contienen las columnas necesarias ('Rut', 'Trabajador', 'Código de Contrato'). Revisa el formato exportado por Talana.")
         else:
             value_cols = [col for col in common_cols if col not in id_cols]
@@ -100,7 +100,7 @@ if archivo_mes_anterior is not None and archivo_mes_actual is not None:
 
             df_merged['Observaciones'] = observations
             
-            # Ordenar columnas para el reporte
+            # Ordenar columnas para el reporte final
             output_cols = id_cols + ['Observaciones']
             for col in sorted(value_cols):
                 output_cols.extend([f'{col}_Ant', f'{col}_Act'])
